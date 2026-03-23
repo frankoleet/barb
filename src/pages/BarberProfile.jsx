@@ -92,42 +92,28 @@ function BarberProfile() {
 
   const services = [
     { 
-      name: 'Стрижка + укладка', 
+      name: 'Мужская стрижка', 
       duration: '45–60 мин', 
-      price: 700, 
+      price: 1400, 
       emoji: '✂️',
       image: 'https://images.unsplash.com/photo-1622286342621-4bd786c2447c?w=800&q=80'
     },
     { 
-      name: 'Fade / Skin Fade', 
+      name: 'Биозавивка', 
       duration: '60–75 мин', 
-      price: 900, 
+      price: 3400, 
       emoji: '💈',
       image: 'https://images.unsplash.com/photo-1621605815971-fbc98d665033?w=800&q=80'
     },
     { 
-      name: 'Борода + коррекция', 
-      duration: '30 мин', 
-      price: 500, 
-      emoji: '🪒',
-      image: 'https://images.unsplash.com/photo-1503951914875-452162b0f3f1?w=800&q=80'
-    },
-    { 
-      name: 'Стрижка + борода', 
-      duration: '90 мин', 
-      price: 1200, 
-      emoji: '⚡',
-      image: 'https://images.unsplash.com/photo-1605497788044-5a32c7078486?w=800&q=80'
-    },
-    { 
       name: 'Детская стрижка', 
       duration: '30–40 мин', 
-      price: 500, 
+      price: 1100, 
       emoji: '🌟',
       image: 'https://images.unsplash.com/photo-1599351431202-1e0f0137899a?w=800&q=80'
     },
     { 
-      name: 'Горячее бритьё', 
+      name: 'Камуфляж седины', 
       duration: '45 мин', 
       price: 800, 
       emoji: '🔥',
@@ -139,6 +125,18 @@ function BarberProfile() {
 
   return (
     <div className="barber-profile">
+      {/* Анимированные частицы на фоне */}
+      <div className="background-particles">
+        {[...Array(40)].map((_, i) => (
+          <span key={i} className="bg-particle" style={{
+            left: `${Math.random() * 100}%`,
+            top: `${Math.random() * 100}%`,
+            animationDelay: `${Math.random() * 20}s`,
+            animationDuration: `${15 + Math.random() * 10}s`
+          }}></span>
+        ))}
+      </div>
+
       {/* Header */}
       <header className="profile-header">
         <div className="header-content">
@@ -192,6 +190,20 @@ function BarberProfile() {
             Обо мне
           </button>
         </div>
+        
+        {/* Информационный блок */}
+        {activeTab === 'services' && (
+          <div className="info-block">
+            <p className="info-description">
+              Выберите услугу и нажмите, чтобы записаться
+            </p>
+            <div className="info-rules">
+              <p className="info-rules-text">
+                <strong>Важно:</strong> На каждую стрижку выделено 45 минут, поэтому прошу приходить за 10 минут до начала.
+              </p>
+            </div>
+          </div>
+        )}
       </div>
 
       {/* Tab Content */}
@@ -232,14 +244,14 @@ function BarberProfile() {
                         <div className="service-divider"></div>
                         <div className="service-footer">
                           <span className="service-time">⏱️ {service.duration}</span>
-                          <span className="service-price">от {service.price}с</span>
+                          <span className="service-price">{service.price}с</span>
                         </div>
                       </div>
                     </div>
 
-                    {/* Форма заявки на всю ширину после конца ряда */}
+                    {/* Форма для десктопа - в конце ряда */}
                     {showFormAfterRow && (
-                      <div className="booking-form-container">
+                      <div className="booking-form-container desktop-form">
                         <form className="booking-form" onSubmit={handleSubmit}>
                           {/* Информационный блок */}
                           <div className="form-header">
@@ -329,6 +341,99 @@ function BarberProfile() {
                         </form>
                       </div>
                     )}
+
+                    {/* Форма для мобильных - сразу под карточкой */}
+                    {isSelected && (
+                      <div className="booking-form-container mobile-form">
+                        <form className="booking-form" onSubmit={handleSubmit}>
+                          {/* Информационный блок */}
+                          <div className="form-header">
+                            <h3 className="form-title">Запись на {selectedService.name}</h3>
+                            <p className="form-description">
+                              Вы записываетесь на стрижку. Я вам перезвоню для подтверждения и уточнения деталей.
+                            </p>
+                          </div>
+                          
+                          <div className="form-row">
+                            <div className="form-group">
+                              <label htmlFor="name-mobile">Ваше имя *</label>
+                              <input
+                                type="text"
+                                id="name-mobile"
+                                name="name"
+                                value={formData.name}
+                                onChange={handleInputChange}
+                                placeholder="Например: Анна"
+                                required
+                              />
+                            </div>
+
+                            <div className="form-group">
+                              <label htmlFor="phone-mobile">Номер телефона *</label>
+                              <input
+                                type="tel"
+                                id="phone-mobile"
+                                name="phone"
+                                value={formData.phone}
+                                onChange={handleInputChange}
+                                placeholder="+996 555 123 456"
+                                required
+                              />
+                            </div>
+                          </div>
+
+                          {/* Выбор даты */}
+                          <div className="form-group">
+                            <label>Выберите дату *</label>
+                            <div className="date-selector-inline">
+                              {dates.map(d => (
+                                <button
+                                  key={d.fullDate}
+                                  type="button"
+                                  className={`date-btn ${formData.date === d.fullDate ? 'active' : ''}`}
+                                  onClick={() => handleDateSelect(d.fullDate)}
+                                >
+                                  {d.displayFull}
+                                </button>
+                              ))}
+                            </div>
+                          </div>
+
+                          {/* Выбор времени */}
+                          <div className="form-group">
+                            <label>Выберите время *</label>
+                            <div className="time-selector-grid">
+                              {timeSlots.map(time => (
+                                <button
+                                  key={time}
+                                  type="button"
+                                  className={`time-btn ${formData.time === time ? 'active' : ''}`}
+                                  onClick={() => handleTimeSelect(time)}
+                                >
+                                  {time}
+                                </button>
+                              ))}
+                            </div>
+                          </div>
+
+                          <div className="form-group">
+                            <label htmlFor="comment-mobile">Комментарий</label>
+                            <textarea
+                              id="comment-mobile"
+                              name="comment"
+                              value={formData.comment}
+                              onChange={handleInputChange}
+                              placeholder="Укажите любые пожелания"
+                              rows="3"
+                            />
+                          </div>
+
+                          <button type="submit" className="submit-btn">
+                            ✈️ Отправить заявку
+                          </button>
+                        </form>
+                      </div>
+                    )}
                   </React.Fragment>
                 )
               })}
@@ -354,9 +459,10 @@ function BarberProfile() {
           <div className="about-tab">
             <h2 className="section-title">Обо мне</h2>
             <p className="bio-text">
-              Профессиональный барбер с более чем 8-летним опытом работы. 
-              Специализируюсь на классических и современных мужских стрижках, 
-              fade-переходах и уходе за бородой. Каждый клиент для меня уникален.
+              Привет! Меня зовут Нур, я барбер с опытом работы более 3 лет. 
+              В этой профессии я не просто стригу — я помогаю людям чувствовать себя уверенно. 
+              Для меня важно, чтобы каждый клиент уходил не только с идеальной стрижкой, 
+              но и с отличным настроением.
             </p>
 
             <h3 className="skills-title">Специализация</h3>
