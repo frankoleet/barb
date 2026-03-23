@@ -1,0 +1,42 @@
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;900&family=Bebas+Neue&display=swap');
+
+:root {
+  --bg-dark: #1a1410;
+  --bg-medium: #2d2419;
+  --bg-card: #4a3f35;
+  --text-light: #f8f8f8;
+  --text-gray: #a8a8a8;
+  --text-beige: #d4c5b9;
+  --neon-orange: #ff6b35;
+  --neon-amber: #ffa500;
+  --neon-gold: #d4af37;
+}
+
+body {
+  margin: 0;
+  font-family: 'Montserrat', sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+code {
+  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New', monospace;
+}
+
+/* Scrollbar */
+::-webkit-scrollbar {
+  width: 10px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--bg-dark);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--neon-orange);
+  border-radius: 5px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--neon-amber);
+}
