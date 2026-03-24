@@ -1,42 +1,75 @@
-@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;900&family=Bebas+Neue&display=swap');
-
 :root {
-  --bg-dark: #1a1410;
-  --bg-medium: #2d2419;
-  --bg-card: #4a3f35;
-  --text-light: #f8f8f8;
-  --text-gray: #a8a8a8;
-  --text-beige: #d4c5b9;
-  --neon-orange: #ff6b35;
-  --neon-amber: #ffa500;
-  --neon-gold: #d4af37;
+  color-scheme: dark;
+  --scrollbar-size: 12px;
+  --scrollbar-track: rgba(8, 8, 14, 0.92);
+  --scrollbar-thumb-solid: #a855f7;
+  --scrollbar-thumb-hover-solid: #c084fc;
+  --scrollbar-thumb: linear-gradient(180deg, #4facfe 0%, #a855f7 58%, #7c3aed 100%);
+  --scrollbar-thumb-hover: linear-gradient(180deg, #79cbff 0%, #c084fc 58%, #8b5cf6 100%);
+  --scrollbar-border: rgba(5, 5, 8, 0.95);
+  --selection-bg: rgba(168, 85, 247, 0.35);
+  --selection-text: #ffffff;
+}
+
+html {
+  scrollbar-gutter: stable;
+  scrollbar-width: thin;
+  scrollbar-color: var(--scrollbar-thumb-solid) var(--scrollbar-track);
 }
 
 body {
   margin: 0;
-  font-family: 'Montserrat', sans-serif;
+  min-height: 100vh;
+  background: #050508;
+  color: #f0eeff;
+  font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  overflow-x: hidden;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+::selection {
+  background: var(--selection-bg);
+  color: var(--selection-text);
 }
 
 code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New', monospace;
 }
 
-/* Scrollbar */
 ::-webkit-scrollbar {
-  width: 10px;
+  width: var(--scrollbar-size);
+  height: var(--scrollbar-size);
 }
 
 ::-webkit-scrollbar-track {
-  background: var(--bg-dark);
+  background:
+    linear-gradient(180deg, rgba(8, 8, 14, 0.98) 0%, rgba(22, 22, 31, 0.94) 100%);
+  border-left: 1px solid rgba(168, 85, 247, 0.08);
 }
 
 ::-webkit-scrollbar-thumb {
-  background: var(--neon-orange);
-  border-radius: 5px;
+  background: var(--scrollbar-thumb);
+  border-radius: 999px;
+  border: 2px solid var(--scrollbar-border);
+  box-shadow:
+    inset 0 0 0 1px rgba(240, 238, 255, 0.08),
+    0 0 18px rgba(168, 85, 247, 0.22);
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: var(--neon-amber);
+  background: var(--scrollbar-thumb-hover);
+  box-shadow:
+    inset 0 0 0 1px rgba(240, 238, 255, 0.12),
+    0 0 22px rgba(192, 132, 252, 0.3);
+}
+
+::-webkit-scrollbar-corner {
+  background: rgba(8, 8, 14, 0.98);
 }
