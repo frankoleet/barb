@@ -129,6 +129,42 @@ function BarberProfile() {
     return () => window.clearTimeout(timerId)
   }, [isMobile, selectedService])
 
+  useEffect(() => {
+    const revealNodes = Array.from(document.querySelectorAll('[data-reveal]'))
+
+    if (!revealNodes.length) {
+      return
+    }
+
+    const reducedMotionQuery = window.matchMedia('(prefers-reduced-motion: reduce)')
+
+    if (reducedMotionQuery.matches) {
+      revealNodes.forEach((node) => node.setAttribute('data-reveal-state', 'visible'))
+      return
+    }
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (!entry.isIntersecting) {
+            return
+          }
+
+          entry.target.setAttribute('data-reveal-state', 'visible')
+          observer.unobserve(entry.target)
+        })
+      },
+      {
+        threshold: 0.16,
+        rootMargin: '0px 0px -8% 0px'
+      }
+    )
+
+    revealNodes.forEach((node) => observer.observe(node))
+
+    return () => observer.disconnect()
+  }, [])
+
   const handleServiceSelect = (service) => {
     const nextService = selectedService?.name === service.name ? null : service
 
@@ -308,8 +344,6 @@ function BarberProfile() {
     <div className="barber-profile">
       <section className="hero-section">
         <div className="hero-shell">
-          <p className="hero-floating-label fade-up delay-1">Premium Dark Barber Profile</p>
-
           <div className="hero-aurora" aria-hidden="true">
             <div className="aurora-blob aurora-blob-1"></div>
             <div className="aurora-blob aurora-blob-2"></div>
@@ -318,79 +352,66 @@ function BarberProfile() {
           <div className="hero-lines" aria-hidden="true"></div>
           <div className="hero-overlay" aria-hidden="true"></div>
 
-          <div className="hero-side-panel fade-up delay-5">
-            <div className="hero-socials">
-              <a href="#" className="hero-social-btn" aria-label="Instagram">
-                <svg viewBox="0 0 24 24" aria-hidden="true">
-                  <rect x="3.5" y="3.5" width="17" height="17" rx="5"></rect>
-                  <circle cx="12" cy="12" r="4.2"></circle>
-                  <circle cx="17.3" cy="6.7" r="1.1" fill="currentColor" stroke="none"></circle>
-                </svg>
-                <span>Instagram</span>
-              </a>
-              <a href="#" className="hero-social-btn" aria-label="WhatsApp">
-                <svg viewBox="0 0 24 24" aria-hidden="true">
-                  <path d="M12 3.8a8.18 8.18 0 0 0-6.96 12.48l-.8 3.92 4-.76A8.2 8.2 0 1 0 12 3.8Z"></path>
-                  <path d="M9.14 8.84c-.19-.42-.39-.43-.57-.43h-.48c-.16 0-.42.06-.64.3-.22.24-.85.83-.85 2.02s.87 2.35.99 2.51c.12.16 1.69 2.72 4.18 3.7 2.07.81 2.49.65 2.94.61.45-.04 1.46-.6 1.66-1.17.2-.57.2-1.06.14-1.17-.06-.1-.22-.16-.45-.28-.24-.12-1.4-.69-1.62-.76-.22-.08-.38-.12-.54.12-.16.24-.62.76-.76.92-.14.16-.28.18-.52.06-.24-.12-1-.37-1.9-1.19-.7-.62-1.17-1.38-1.31-1.62-.14-.24-.02-.37.1-.49.11-.11.24-.28.36-.42.12-.14.16-.24.24-.4.08-.16.04-.3-.02-.42-.06-.12-.54-1.33-.75-1.81Z" fill="currentColor" stroke="none"></path>
-                </svg>
-                <span>WhatsApp</span>
-              </a>
+          <div className="hero-media hero-media-enter delay-2">
+            <div className="hero-media-frame">
+              <img src="/b.png" alt="Барбер за работой" />
             </div>
-
-            <a className="hero-cta" href="#services">
-              Записаться
-            </a>
-          </div>
-
-          <div className="hero-avatar-wrap">
-            <div className="hero-avatar">
-              <img
-                src="https://images.unsplash.com/photo-1517832606299-7ae9b720a186?w=900&q=80"
-                alt="Портрет барбера"
-              />
+            <div className="hero-monogram" aria-hidden="true">
+              N
             </div>
           </div>
 
           <div className="hero-copy">
             <div className="hero-copy-main">
-              <h1 className="hero-title fade-up delay-2">Arman Seitkali</h1>
+              <p className="hero-floating-label fade-up delay-1">BARBER • BISHKEK</p>
 
-              <div className="hero-mobile-actions fade-up delay-3">
-                <div className="hero-socials hero-socials-mobile">
-                  <a href="#" className="hero-social-btn" aria-label="Instagram">
-                    <svg viewBox="0 0 24 24" aria-hidden="true">
-                      <rect x="3.5" y="3.5" width="17" height="17" rx="5"></rect>
-                      <circle cx="12" cy="12" r="4.2"></circle>
-                      <circle cx="17.3" cy="6.7" r="1.1" fill="currentColor" stroke="none"></circle>
-                    </svg>
-                    <span>Instagram</span>
-                  </a>
-                  <a href="#" className="hero-social-btn" aria-label="WhatsApp">
-                    <svg viewBox="0 0 24 24" aria-hidden="true">
-                      <path d="M12 3.8a8.18 8.18 0 0 0-6.96 12.48l-.8 3.92 4-.76A8.2 8.2 0 1 0 12 3.8Z"></path>
-                      <path d="M9.14 8.84c-.19-.42-.39-.43-.57-.43h-.48c-.16 0-.42.06-.64.3-.22.24-.85.83-.85 2.02s.87 2.35.99 2.51c.12.16 1.69 2.72 4.18 3.7 2.07.81 2.49.65 2.94.61.45-.04 1.46-.6 1.66-1.17.2-.57.2-1.06.14-1.17-.06-.1-.22-.16-.45-.28-.24-.12-1.4-.69-1.62-.76-.22-.08-.38-.12-.54.12-.16.24-.62.76-.76.92-.14.16-.28.18-.52.06-.24-.12-1-.37-1.9-1.19-.7-.62-1.17-1.38-1.31-1.62-.14-.24-.02-.37.1-.49.11-.11.24-.28.36-.42.12-.14.16-.24.24-.4.08-.16.04-.3-.02-.42-.06-.12-.54-1.33-.75-1.81Z" fill="currentColor" stroke="none"></path>
-                    </svg>
-                    <span>WhatsApp</span>
-                  </a>
-                </div>
+              <h1 className="hero-title fade-up delay-3">
+                <span>ARMAN</span>
+                <span>SEITKALI</span>
+              </h1>
 
-                <a className="hero-cta hero-cta-mobile" href="#services">
-                  Записаться
-                </a>
-              </div>
+              <div className="hero-divider fade-up delay-4" aria-hidden="true"></div>
 
               <p className="hero-subtitle fade-up delay-4">
-                Мужские стрижки, текстура и аккуратный сервис в спокойной премиальной подаче.
+                Парикмахер-стилист с вниманием к форме, текстуре и деталям.
               </p>
             </div>
 
-            <div className="hero-footer fade-up delay-5">
-              <div className="hero-meta">
-                <span className="hero-location">Бишкек, Кыргызстан</span>
-                <span className="hero-status-badge">
-                  <span className="hero-status-dot"></span>
-                  Принимаю запись
-                </span>
+            <div className="hero-service-line fade-up delay-4" aria-label="Skills">
+              <span className="hero-service-line-segment" aria-hidden="true"></span>
+              <div className="hero-service-buttons">
+                <span className="hero-service-line-chip">Fade</span>
+                <span className="hero-service-line-chip">Crop</span>
+                <span className="hero-service-line-chip">Texture</span>
+                <span className="hero-service-line-chip">Styling</span>
+              </div>
+              <span className="hero-service-line-segment" aria-hidden="true"></span>
+            </div>
+
+            <div className="hero-bottom fade-up delay-5">
+              <div className="hero-footer">
+                <div className="hero-meta">
+                  <span className="hero-location">Бишкек, Кыргызстан</span>
+                  <span className="hero-status-badge">
+                    <span className="hero-status-dot"></span>
+                    Открыта запись
+                  </span>
+                </div>
+              </div>
+
+              <div className="hero-actions">
+                <div className="hero-socials">
+                  <a href="#" className="hero-social-btn" aria-label="WhatsApp">
+                    <span>WhatsApp</span>
+                  </a>
+                  <a href="#" className="hero-social-btn" aria-label="Instagram">
+                    <span>Instagram</span>
+                  </a>
+                </div>
+
+                <a className="hero-cta" href="#services">
+                  Записаться
+                </a>
               </div>
             </div>
           </div>
@@ -399,7 +420,7 @@ function BarberProfile() {
 
       <main className="content-shell">
         <section className="section-block services-section" id="services">
-          <div className="section-heading services-heading">
+          <div className="section-heading services-heading" data-reveal style={{ '--reveal-order': 0 }}>
             <p className="section-kicker">Услуги</p>
             <h2 className="services-title">Понятные офферы вместо перегруженных карточек</h2>
             <p className="section-note services-note">
@@ -414,14 +435,18 @@ function BarberProfile() {
               return (
                 <div key={`services-row-${rowIndex}`} className="services-row-block">
                   <div className="services-row">
-                    {row.map((service) => {
+                    {row.map((service, index) => {
                       const isSelected = selectedService?.name === service.name
 
                       return (
                         <div key={service.name} className={`service-item ${isSelected ? 'selected' : ''}`}>
                           <article
                             className={`service-card ${isSelected ? 'selected' : ''}`}
-                            style={{ backgroundImage: `url(${service.image})` }}
+                            data-reveal
+                            style={{
+                              '--service-image': `url(${service.image})`,
+                              '--reveal-order': rowIndex * 2 + index + 1
+                            }}
                             onClick={() => handleServiceSelect(service)}
                             onKeyDown={(event) => {
                               if (event.key === 'Enter' || event.key === ' ') {
@@ -478,14 +503,19 @@ function BarberProfile() {
         </section>
 
         <section className="section-block section-grid portfolio-section" id="portfolio">
-          <div className="section-heading portfolio-heading">
+          <div className="section-heading portfolio-heading" data-reveal style={{ '--reveal-order': 0 }}>
             <p className="section-kicker">Портфолио</p>
             <h2>Визуальный блок, который продает доверие</h2>
           </div>
 
           <div className="portfolio-grid">
-            {portfolioItems.map((item) => (
-              <article key={item.title} className="portfolio-card">
+            {portfolioItems.map((item, index) => (
+              <article
+                key={item.title}
+                className="portfolio-card"
+                data-reveal
+                style={{ '--reveal-order': index + 1 }}
+              >
                 <img src={item.image} alt={item.title} />
                 <div className="portfolio-caption">
                   <span>{item.title}</span>

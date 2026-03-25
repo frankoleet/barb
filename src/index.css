@@ -2,16 +2,18 @@
   color-scheme: dark;
   --scrollbar-size: 12px;
   --scrollbar-track: rgba(8, 8, 14, 0.92);
-  --scrollbar-thumb-solid: #a855f7;
-  --scrollbar-thumb-hover-solid: #c084fc;
-  --scrollbar-thumb: linear-gradient(180deg, #4facfe 0%, #a855f7 58%, #7c3aed 100%);
-  --scrollbar-thumb-hover: linear-gradient(180deg, #79cbff 0%, #c084fc 58%, #8b5cf6 100%);
+  --scrollbar-thumb-solid: #bc8f54;
+  --scrollbar-thumb-hover-solid: #ddb87f;
+  --scrollbar-thumb: linear-gradient(180deg, #e4c38d 0%, #d4a574 58%, #a8743f 100%);
+  --scrollbar-thumb-hover: linear-gradient(180deg, #edd3a5 0%, #ddb87f 58%, #bc8f54 100%);
   --scrollbar-border: rgba(5, 5, 8, 0.95);
   --selection-bg: rgba(168, 85, 247, 0.35);
   --selection-text: #ffffff;
 }
 
 html {
+  scroll-behavior: smooth;
+  scroll-padding-top: 24px;
   scrollbar-gutter: stable;
   scrollbar-width: thin;
   scrollbar-color: var(--scrollbar-thumb-solid) var(--scrollbar-track);
@@ -51,7 +53,7 @@ code {
 ::-webkit-scrollbar-track {
   background:
     linear-gradient(180deg, rgba(8, 8, 14, 0.98) 0%, rgba(22, 22, 31, 0.94) 100%);
-  border-left: 1px solid rgba(168, 85, 247, 0.08);
+  border-left: 1px solid rgba(212, 165, 116, 0.08);
 }
 
 ::-webkit-scrollbar-thumb {
@@ -60,16 +62,22 @@ code {
   border: 2px solid var(--scrollbar-border);
   box-shadow:
     inset 0 0 0 1px rgba(240, 238, 255, 0.08),
-    0 0 18px rgba(168, 85, 247, 0.22);
+    0 0 18px rgba(212, 165, 116, 0.22);
 }
 
 ::-webkit-scrollbar-thumb:hover {
   background: var(--scrollbar-thumb-hover);
   box-shadow:
     inset 0 0 0 1px rgba(240, 238, 255, 0.12),
-    0 0 22px rgba(192, 132, 252, 0.3);
+    0 0 22px rgba(221, 184, 127, 0.32);
 }
 
 ::-webkit-scrollbar-corner {
   background: rgba(8, 8, 14, 0.98);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
 }
