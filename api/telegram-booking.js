@@ -5,21 +5,21 @@ const escapeHtml = (value) =>
     .replaceAll('>', '&gt;')
 
 const buildTelegramMessage = (booking) => {
-  const comment = booking.comment?.trim() ? escapeHtml(booking.comment.trim()) : 'Нет комментария'
+  const comment = booking.comment?.trim()
+    ? escapeHtml(booking.comment.trim())
+    : 'гость не оставил комментарий'
+  const bookingSlot = `${escapeHtml(booking.time)} ${escapeHtml(booking.dateLabel || booking.date)}`
 
   return [
-    '<b>Новая заявка на запись</b>',
+    `🔔 Новая заявка на запись в ${bookingSlot}`,
     '',
-    `<b>Услуга:</b> ${escapeHtml(booking.serviceName)}`,
-    `<b>Формат:</b> ${escapeHtml(booking.serviceLabel || '-')}`,
-    `<b>Длительность:</b> ${escapeHtml(booking.duration || '-')}`,
-    `<b>Цена:</b> ${escapeHtml(String(booking.price ?? '-'))}`,
+    `💈 Услуга: ${escapeHtml(booking.serviceName)}`,
+    `💲 Цена: ${escapeHtml(String(booking.price ?? '-'))}`,
     '',
-    `<b>Имя:</b> ${escapeHtml(booking.name)}`,
-    `<b>Телефон:</b> ${escapeHtml(booking.phone)}`,
-    `<b>Дата:</b> ${escapeHtml(booking.dateLabel || booking.date)}`,
-    `<b>Время:</b> ${escapeHtml(booking.time)}`,
-    `<b>Комментарий:</b> ${comment}`
+    `👤 Имя: ${escapeHtml(booking.name)}`,
+    `📞 Телефон: ${escapeHtml(booking.phone)}`,
+    '',
+    `💬 Комментарий: ${comment}`
   ].join('\n')
 }
 
@@ -57,7 +57,6 @@ export default async function handler(request, response) {
       },
       body: JSON.stringify({
         chat_id: telegramChatId,
-        parse_mode: 'HTML',
         text: buildTelegramMessage(booking)
       })
     })
