@@ -1,6 +1,10 @@
 import { useEffect, useRef, useState } from 'react'
 import './BarberProfile.css'
 
+const WHATSAPP_URL = 'http://wa.me/996553707423'
+const INSTAGRAM_URL = 'https://www.instagram.com/nrrbarber/'
+const TELEGRAM_BOOKING_API_URL = '/api/telegram-booking'
+
 const services = [
   {
     name: 'Мужская стрижка',
@@ -43,15 +47,15 @@ const services = [
 const portfolioItems = [
   {
     title: 'Fade / texture',
-    image: 'https://images.unsplash.com/photo-1517832606299-7ae9b720a186?w=1200&q=80'
+    image: '/a.png'
   },
   {
     title: 'Clean classic',
-    image: 'https://images.unsplash.com/photo-1503951914875-452162b0f3f1?w=1200&q=80'
+    image: '/c.JPG'
   },
   {
     title: 'Premium detail',
-    image: 'https://images.unsplash.com/photo-1521590832167-7bcbfaa6381f?w=1200&q=80'
+    image: '/d.png'
   }
 ]
 
@@ -59,6 +63,7 @@ function BarberProfile() {
   const [selectedService, setSelectedService] = useState(null)
   const [showComment, setShowComment] = useState(false)
   const [isMobile, setIsMobile] = useState(false)
+  const [isSubmitting, setIsSubmitting] = useState(false)
   const bookingFormRef = useRef(null)
 
   const [formData, setFormData] = useState({
@@ -171,6 +176,7 @@ function BarberProfile() {
     setSelectedService(nextService)
     setFormError('')
     setIsSubmitted(false)
+    setIsSubmitting(false)
 
     if (!nextService || nextService.name !== selectedService?.name) {
       setShowComment(false)
@@ -190,7 +196,7 @@ function BarberProfile() {
     setIsSubmitted(false)
   }
 
-  const handleSubmit = (event) => {
+  const handleSubmit = async (event) => {
     event.preventDefault()
 
     if (!selectedService) {
@@ -210,16 +216,55 @@ function BarberProfile() {
       ...formData
     })
 
-    setFormError('')
-    setIsSubmitted(true)
-    setShowComment(false)
-    setFormData({
-      name: '',
-      date: '',
-      time: '',
-      phone: '',
-      comment: ''
-    })
+    const selectedDate = dates.find((date) => date.fullDate === formData.date)
+    const payload = {
+      serviceName: selectedService.name,
+      serviceLabel: selectedService.label,
+      price: selectedService.price,
+      duration: selectedService.duration,
+      name: formData.name,
+      phone: formData.phone,
+      date: formData.date,
+      dateLabel: selectedDate?.displayFull ?? formData.date,
+      time: formData.time,
+      comment: formData.comment.trim()
+    }
+
+    try {
+      setIsSubmitting(true)
+      setFormError('')
+      setIsSubmitted(false)
+
+      const response = await fetch(TELEGRAM_BOOKING_API_URL, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(payload)
+      })
+
+      if (!response.ok) {
+        throw new Error('telegram_send_failed')
+      }
+
+      setFormError('')
+      setIsSubmitted(true)
+      setShowComment(false)
+      setFormData({
+        name: '',
+        date: '',
+        time: '',
+        phone: '',
+        comment: ''
+      })
+    } catch {
+      setIsSubmitted(false)
+      setFormError('submit_failed')
+    } finally {
+      setIsSubmitting(false)
+    }
+
+    return
   }
 
   const renderBookingForm = () => {
@@ -235,7 +280,7 @@ function BarberProfile() {
       >
         <div className="inline-booking-top">
           <div className="inline-booking-copy">
-            <span className="card-caption">Быстрая запись</span>
+            <span className="card-caption">Запись</span>
             <h3>Записаться на {selectedService.name.toLowerCase()}</h3>
           </div>
 
@@ -253,7 +298,7 @@ function BarberProfile() {
               name="name"
               value={formData.name}
               onChange={handleInputChange}
-              placeholder="Например, Азамат"
+              placeholder="Например, Бека"
             />
           </label>
 
@@ -264,7 +309,7 @@ function BarberProfile() {
               name="phone"
               value={formData.phone}
               onChange={handleInputChange}
-              placeholder="+996 555 123 456"
+              placeholder="+996 777 123 456"
             />
           </label>
 
@@ -307,12 +352,13 @@ function BarberProfile() {
           <button
             type="button"
             className={`comment-toggle ${showComment ? 'active' : ''}`}
+            disabled={isSubmitting}
             onClick={() => setShowComment((prev) => !prev)}
           >
             {showComment ? 'Скрыть комментарий' : 'Добавить комментарий'}
           </button>
 
-          <button type="submit" className="submit-btn compact-submit">
+          <button type="submit" className="submit-btn compact-submit" disabled={isSubmitting}>
             Отправить заявку
           </button>
         </div>
@@ -330,8 +376,21 @@ function BarberProfile() {
           </label>
         )}
 
-        {formError && <div className="form-feedback error">{formError}</div>}
+        {formError === 'submit_failed' && (
+          <div className="form-feedback error">
+            <p>Заявка не отправлена, напишите напрямую мне.</p>
+            <a href={WHATSAPP_URL} className="form-feedback-link" target="_blank" rel="noreferrer">
+              Написать в WhatsApp
+            </a>
+          </div>
+        )}
+        {formError && formError !== 'submit_failed' && <div className="form-feedback error">{formError}</div>}
         {isSubmitted && (
+          <div className="form-feedback success">
+            Заявка отправлена, с вами свяжемся в ближайшее время, чтобы подтвердить запись.
+          </div>
+        )}
+        {false && isSubmitted && (
           <div className="form-feedback success">
             Заявка сохранена. Следующим шагом можно подключить реальную отправку в Telegram, WhatsApp или CRM.
           </div>
@@ -366,8 +425,8 @@ function BarberProfile() {
               <p className="hero-floating-label fade-up delay-1">BARBER • BISHKEK</p>
 
               <h1 className="hero-title fade-up delay-3">
-                <span>ARMAN</span>
-                <span>SEITKALI</span>
+                <span>Nur</span>
+                <span>Barber</span>
               </h1>
 
               <div className="hero-divider fade-up delay-4" aria-hidden="true"></div>
@@ -401,10 +460,10 @@ function BarberProfile() {
 
               <div className="hero-actions">
                 <div className="hero-socials">
-                  <a href="#" className="hero-social-btn" aria-label="WhatsApp">
+                  <a href={WHATSAPP_URL} className="hero-social-btn" aria-label="WhatsApp" target="_blank" rel="noreferrer">
                     <span>WhatsApp</span>
                   </a>
-                  <a href="#" className="hero-social-btn" aria-label="Instagram">
+                  <a href={INSTAGRAM_URL} className="hero-social-btn" aria-label="Instagram" target="_blank" rel="noreferrer">
                     <span>Instagram</span>
                   </a>
                 </div>
@@ -422,9 +481,9 @@ function BarberProfile() {
         <section className="section-block services-section" id="services">
           <div className="section-heading services-heading" data-reveal style={{ '--reveal-order': 0 }}>
             <p className="section-kicker">Услуги</p>
-            <h2 className="services-title">Понятные офферы вместо перегруженных карточек</h2>
+            <h2 className="services-title">Записать на услуги можно здесь</h2>
             <p className="section-note services-note">
-              Выберите карточку, и аккуратная mini-форма откроется сразу под тем блоком, который вы нажали.
+              Нажми на услуги и отправь заявку на запись
             </p>
           </div>
 
@@ -505,7 +564,7 @@ function BarberProfile() {
         <section className="section-block section-grid portfolio-section" id="portfolio">
           <div className="section-heading portfolio-heading" data-reveal style={{ '--reveal-order': 0 }}>
             <p className="section-kicker">Портфолио</p>
-            <h2>Визуальный блок, который продает доверие</h2>
+            <h2>Мои работы можно посмотреть здесь</h2>
           </div>
 
           <div className="portfolio-grid">
@@ -525,6 +584,29 @@ function BarberProfile() {
           </div>
         </section>
       </main>
+
+      <footer className="site-footer">
+        <div className="footer-shell">
+          <div className="footer-brand">
+            <span className="footer-brand-name">
+              <span>Nur</span>
+              <span>Barber</span>
+            </span>
+          </div>
+
+          <div className="footer-actions">
+            <a href={WHATSAPP_URL} className="hero-social-btn footer-social-btn" aria-label="WhatsApp" target="_blank" rel="noreferrer">
+              <span>WhatsApp</span>
+            </a>
+            <a href={INSTAGRAM_URL} className="hero-social-btn footer-social-btn" aria-label="Instagram" target="_blank" rel="noreferrer">
+              <span>Instagram</span>
+            </a>
+            <a className="hero-cta footer-cta" href="#services">
+              Записаться
+            </a>
+          </div>
+        </div>
+      </footer>
     </div>
   )
 }
